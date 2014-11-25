@@ -1,12 +1,10 @@
 
-#include "BaseTest.h"
-
-
+#include "Test.h"
 
 
 int main() {
 	cout << "!!!Hello World!!!" << endl; // prints !!!Hello World!!!
-	BaseTest t("testName","chrono");
+	Test t("testName","chrono");
 	t.print();
 	t.generateJson();
 	t.saveJson();
