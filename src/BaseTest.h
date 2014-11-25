@@ -11,6 +11,9 @@
 #include <fstream>
 #include <iostream>
 #include <string>
+#include <vector>
+
+/* Path to armadillo library. */
 #include "/Users/felipegb94/helper_libraries/rapidjson/include/rapidjson/document.h"
 #include "/Users/felipegb94/helper_libraries/rapidjson/include/rapidjson/stringbuffer.h"
 #include "/Users/felipegb94/helper_libraries/rapidjson/include/rapidjson/prettywriter.h"
@@ -24,8 +27,18 @@ public:
 	string name; /* Name of test */
 	string projectName; /* Name of the project: e.g: chrono, chronoRender, etc. */
 	bool passed; /* Did the test pass or fail? */
-	rapidjson::Document TestJson;
 
+	/* Runtimes that are being tested. runtimes and runtimeValues have 
+	   a 1 to 1 correspondance. */
+	vector<string> runtimes; /* Name of runtime */
+	vector<double> runtimeValues; /* Value of runtimes */
+
+	vector<string> parameters; /* Test arguments/parameters */
+
+	rapidjson::Document TestJson; /* Output JSON of the test */
+
+	/* Constructor: Every test has to have a name and an associated project 
+	   to it. */ 
 	BaseTest(string testName, string testProjectName)
 		:name(testName),
  		projectName(testProjectName),
@@ -44,9 +57,7 @@ public:
 	};
 
 	/* Contains Test. Returns if test passed or failed */
-	virtual int execute(int argc, char *argv[]){
-		return 0;
-	} 
+	virtual int execute(int argc, char *argv[]); 
 
 	virtual void generateJson(){
 
@@ -89,6 +100,7 @@ public:
    	}
 
 };
+
 
 
 
