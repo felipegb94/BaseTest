@@ -61,6 +61,7 @@ public:
 		return 0;
 	}
 
+	/* This function generate a json object and populates it. */
 	virtual void generateJson(){
 
 		/* Initialize JSON object */
@@ -71,7 +72,7 @@ public:
 		rapidjson::Value jsonProject;
 		rapidjson::Value jsonPassed;
 		rapidjson::Value jsonRuntimes(rapidjson::kArrayType);
-		//rapidjson::Value jsonRuntimeValues(rapidjson::kArrayType);
+		rapidjson::Value jsonRuntimeValues(rapidjson::kArrayType);
 
 
 		/* Set Values to json elements */
@@ -82,16 +83,20 @@ public:
 		for (vector<string>::iterator itr = runtimes.begin(); itr != runtimes.end(); ++itr){
 			jsonRuntimes.PushBack((*itr).c_str(),allocator);
 		}
+		for (vector<double>::iterator itr = runtimeValues.begin(); itr != runtimeValues.end(); ++itr){
+			jsonRuntimeValues.PushBack(*itr,allocator);
+		}
 
-		/* Add values to JSON*/
+		/* Add values to JSON File*/
 		TestJson.AddMember("name", jsonName, allocator);
 		TestJson.AddMember("project_name", jsonProject, allocator);
 		TestJson.AddMember("passed", jsonPassed, allocator);
 		TestJson.AddMember("runtimes", jsonRuntimes, allocator);
-		//TestJson.AddMember("runtime_values", jsonRuntimeValues, allocator);
+		TestJson.AddMember("runtime_values", jsonRuntimeValues, allocator);
 
 	}
-
+	
+	/* This function writes the json object to a file */
 	void saveJson(){
 
 		string filename = name + ".json"; 
