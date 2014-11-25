@@ -14,6 +14,10 @@ public:
 
 	virtual int execute(int argc, char *argv[]){
 		/* test goes here. */ 
+		cout << "Test is being executed" << endl;
+		
+
+		return 0; 
 	}
 };
 

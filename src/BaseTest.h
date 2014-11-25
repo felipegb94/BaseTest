@@ -44,7 +44,7 @@ public:
  		projectName(testProjectName),
  		passed(false)
  	{
- 		std::cout << "Contructing Base Test" <<std::endl;
+ 		cout << "Contructing Base Test" << endl;
  	}
 
 	virtual ~BaseTest(){};
@@ -57,7 +57,9 @@ public:
 	};
 
 	/* Contains Test. Returns if test passed or failed */
-	virtual int execute(int argc, char *argv[]); 
+	virtual int execute(int argc, char *argv[]){
+		return 0;
+	}
 
 	virtual void generateJson(){
 
