@@ -14,9 +14,9 @@
 #include <vector>
 
 /* Path to armadillo library. */
-#include "/Users/felipegb94/helper_libraries/rapidjson/include/rapidjson/document.h"
-#include "/Users/felipegb94/helper_libraries/rapidjson/include/rapidjson/stringbuffer.h"
-#include "/Users/felipegb94/helper_libraries/rapidjson/include/rapidjson/prettywriter.h"
+#include "../include/rapidjson/document.h"
+#include "../include/rapidjson/stringbuffer.h"
+#include "../include/rapidjson/prettywriter.h"
 
 using namespace std;
 
@@ -70,16 +70,26 @@ public:
 		rapidjson::Value jsonName;
 		rapidjson::Value jsonProject;
 		rapidjson::Value jsonPassed;
+		rapidjson::Value jsonRuntimes(rapidjson::kArrayType);
+		//rapidjson::Value jsonRuntimeValues(rapidjson::kArrayType);
+
 
 		/* Set Values to json elements */
 		jsonName.SetString(name.c_str());
 		jsonProject.SetString(projectName.c_str());
 		jsonPassed.SetBool(passed);
 
+		for (vector<string>::iterator itr = runtimes.begin(); itr != runtimes.end(); ++itr){
+			jsonRuntimes.PushBack((*itr).c_str(),allocator);
+		}
+
 		/* Add values to JSON*/
 		TestJson.AddMember("name", jsonName, allocator);
 		TestJson.AddMember("project_name", jsonProject, allocator);
 		TestJson.AddMember("passed", jsonPassed, allocator);
+		TestJson.AddMember("runtimes", jsonRuntimes, allocator);
+		//TestJson.AddMember("runtime_values", jsonRuntimeValues, allocator);
+
 	}
 
 	void saveJson(){
