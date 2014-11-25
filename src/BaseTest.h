@@ -13,7 +13,6 @@
 #include <string>
 #include <vector>
 
-/* Path to armadillo library. */
 #include "../include/rapidjson/document.h"
 #include "../include/rapidjson/stringbuffer.h"
 #include "../include/rapidjson/prettywriter.h"
@@ -95,7 +94,7 @@ public:
 		TestJson.AddMember("runtime_values", jsonRuntimeValues, allocator);
 
 	}
-	
+
 	/* This function writes the json object to a file */
 	void saveJson(){
 
