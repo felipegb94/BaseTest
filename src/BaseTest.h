@@ -27,10 +27,10 @@ public:
 	string projectName; /* Name of the project: e.g: chrono, chronoRender, etc. */
 	bool passed; /* Did the test pass or fail? */
 
-	/* Runtimes that are being tested. runtimes and runtimeValues have 
+	/* Metrics that are being tested. metricKeys and metricValues have 
 	   a 1 to 1 correspondance. */
-	vector<string> runtimes; /* Name of runtime */
-	vector<double> runtimeValues; /* Value of runtimes */
+	vector<string> metricKeys; /* Name of metric */
+	vector<double> metricValues; /* Value of metricKeys */
 
 	vector<string> parameters; /* Test arguments/parameters */
 
@@ -70,8 +70,8 @@ public:
 		rapidjson::Value jsonName;
 		rapidjson::Value jsonProject;
 		rapidjson::Value jsonPassed;
-		rapidjson::Value jsonRuntimes(rapidjson::kArrayType);
-		rapidjson::Value jsonRuntimeValues(rapidjson::kArrayType);
+		rapidjson::Value jsonMetricKeys(rapidjson::kArrayType);
+		rapidjson::Value jsonMetricValues(rapidjson::kArrayType);
 
 
 		/* Set Values to json elements */
@@ -79,19 +79,19 @@ public:
 		jsonProject.SetString(projectName.c_str());
 		jsonPassed.SetBool(passed);
 
-		for (vector<string>::iterator itr = runtimes.begin(); itr != runtimes.end(); ++itr){
-			jsonRuntimes.PushBack((*itr).c_str(),allocator);
+		for (vector<string>::iterator itr = metricKeys.begin(); itr != metricKeys.end(); ++itr){
+			jsonMetricKeys.PushBack((*itr).c_str(),allocator);
 		}
-		for (vector<double>::iterator itr = runtimeValues.begin(); itr != runtimeValues.end(); ++itr){
-			jsonRuntimeValues.PushBack(*itr,allocator);
+		for (vector<double>::iterator itr = metricValues.begin(); itr != metricValues.end(); ++itr){
+			jsonMetricValues.PushBack(*itr,allocator);
 		}
 
 		/* Add values to JSON File*/
 		TestJson.AddMember("name", jsonName, allocator);
 		TestJson.AddMember("project_name", jsonProject, allocator);
 		TestJson.AddMember("passed", jsonPassed, allocator);
-		TestJson.AddMember("runtimes", jsonRuntimes, allocator);
-		TestJson.AddMember("runtime_values", jsonRuntimeValues, allocator);
+		TestJson.AddMember("metric_keys", jsonMetricKeys, allocator);
+		TestJson.AddMember("metric_values", jsonMetricValues, allocator);
 
 	}
 
