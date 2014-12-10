@@ -5,16 +5,6 @@
 *      Author: felipegb94
 */
 
-
-//   Better yet:
-//     - initialize JSON document in constructor
-//     - add a collection of addMetric functions, each taking a value of different types
-//     - a function addMetric directly appends to the JSON document
-//     - with this, we can have values of any (supported) type
-//     - we do not need to cache the metric key-value pairs
-
-
-
 #ifndef BaseTest_H_
 #define BaseTest_H_
 
@@ -22,10 +12,13 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <cstdio>
 
 #include "../include/rapidjson/document.h"
 #include "../include/rapidjson/stringbuffer.h"
 #include "../include/rapidjson/prettywriter.h"
+#include "../include/rapidjson/filewritestream.h"
+
 
 
 class BaseTest {
@@ -37,35 +30,80 @@ public:
   : m_name(testName),
     m_projectName(testProjectName),
     m_passed(false)
-  {}
+  {
+    // Initialize JSON object
+    m_testJson.SetObject();
+    rapidjson::Document::AllocatorType& allocator = m_testJson.GetAllocator(); ///< Allocates space in m_testjson.
+ 
+    /// Rapidjson variables to populate and append to json object
+    rapidjson::Value jsonName; 
+    rapidjson::Value jsonProject;
+    m_jsonMetrics.SetObject();
+
+    // Set Values to json elements. Cast c strings to rapidjson proper string type.
+    jsonName.SetString(rapidjson::StringRef(m_name.c_str()));
+    jsonProject.SetString(rapidjson::StringRef(m_projectName.c_str()));
+
+    // Add values to JSON File
+    m_testJson.AddMember("name", jsonName, allocator);
+    m_testJson.AddMember("project_name", jsonProject, allocator);
+
+  }
 
   virtual ~BaseTest() {}
 
   /// Main function for running the test
   void run() {
     m_passed = execute();
-    generateJSON();
-    saveJSON();
+    finalizeJson();
   }
 
   /// Add a test-specific metric (a key-value pair)
   void addMetric(const std::string& metricName,
                  double             metricValue) {
-    m_metricKeys.push_back(metricName);
-    m_metricValues.push_back(metricValue);
-  }
 
-  /*
+    rapidjson::Document::AllocatorType& allocator = m_testJson.GetAllocator(); ///< Allocates space in m_testjson.
+    m_jsonMetrics.AddMember(rapidjson::StringRef(metricName.c_str()), metricValue, allocator);
+
+  }
+  
   void addMetric(const std::string& metricName,
                  int                metricValue) {
-    // append to JSON document
+
+    rapidjson::Document::AllocatorType& allocator = m_testJson.GetAllocator(); ///< Allocates space in m_testjson.
+    m_jsonMetrics.AddMember(rapidjson::StringRef(metricName.c_str()), metricValue, allocator);
+
   }
 
+  /// TODO: String metric stops working when a bool addMetric is added.
   void addMetric(const std::string& metricName,
                  const std::string& metricValue) {
-    // append to JSON document
+
+    rapidjson::Document::AllocatorType& allocator = m_testJson.GetAllocator(); ///< Allocates space in m_testjson.   
+    m_jsonMetrics.AddMember(rapidjson::StringRef(metricName.c_str()), rapidjson::StringRef(metricValue.c_str()), allocator);
+
   }
-  */
+/*
+  void addMetric(const std::string& metricName,
+                 bool               metricValue) {
+    // append to JSON document
+    rapidjson::Document::AllocatorType& allocator = m_testJson.GetAllocator(); ///< Allocates space in m_testjson.
+    m_jsonMetrics.AddMember(rapidjson::StringRef(metricName.c_str()), metricValue, allocator);
+  }
+*/
+  void addMetric(const std::string&   metricName,
+                 std::vector<double>& metricValue) {
+    // append to JSON document
+    rapidjson::Document::AllocatorType& allocator = m_testJson.GetAllocator(); ///< Allocates space in m_testjson.   
+    rapidjson::Value jsonMetricValue(rapidjson::kArrayType);
+
+    for (std::vector<double>::iterator itr = metricValue.begin(); itr != metricValue.end(); ++itr){
+      jsonMetricValue.PushBack(*itr, allocator);
+    }
+
+    m_jsonMetrics.AddMember(rapidjson::StringRef(metricName.c_str()), jsonMetricValue, allocator);
+  }
+  
 
   /// Contains Test. Returns if test passed or failed
   virtual bool execute() = 0;
@@ -74,6 +112,7 @@ public:
   virtual double getExecutionTime() const = 0;
 
   /// Print
+  /// TODO: Create a more descriptive print.
   void print() {
     std::cout << "Test Information: " << std::endl;
     std::cout << "Test Name =  " << m_name << std::endl;
@@ -87,65 +126,42 @@ private:
   bool        m_passed;      ///< Did the test pass or fail?
 
   /// Metrics that are being tested (key-value pairs)
-  std::vector<std::string> m_metricKeys;   ///< Name of metric
-  std::vector<double>      m_metricValues; ///< Value of metricKeys
+  rapidjson::Value    m_jsonMetrics;
+  rapidjson::Document m_testJson;     ///< JSON output of the test
 
-  rapidjson::Document      m_testJson;     ///< JSON output of the test
+  /// This function finalizaes the json object and writes to a file
+  void finalizeJson() {
 
+    rapidjson::Document::AllocatorType& allocator = m_testJson.GetAllocator(); ///< Allocates space in m_testjson.
 
-  /// This function generate a json object and populates it.
-  void generateJson() {
+    /// Add remaining results to json file.
+    rapidjson::Value jsonPassed; ///< Did the test pass?
+    rapidjson::Value jsonExecutionTime; ///< How long did it take the test to run.
 
-    // Initialize JSON object
-    m_testJson.SetObject();
-    rapidjson::Document::AllocatorType& allocator = m_testJson.GetAllocator();
-
-    rapidjson::Value jsonName;
-    rapidjson::Value jsonProject;
-    rapidjson::Value jsonPassed;
-    rapidjson::Value jsonMetricKeys(rapidjson::kArrayType);
-    rapidjson::Value jsonMetricValues(rapidjson::kArrayType);
-
-    // Set Values to json elements
-    jsonName.SetString(m_name.c_str());
-    jsonProject.SetString(m_projectName.c_str());
+    /// Set values to json elements
     jsonPassed.SetBool(m_passed);
+    jsonExecutionTime.SetDouble(getExecutionTime());
 
-    for (vector<string>::iterator itr = m_metricKeys.begin(); itr != m_metricKeys.end(); ++itr){
-      jsonMetricKeys.PushBack(itr->c_str(), allocator);
-    }
-    for (vector<double>::iterator itr = m_metricValues.begin(); itr != m_metricValues.end(); ++itr){
-      jsonMetricValues.PushBack(*itr, allocator);
-    }
+    /// Add to json the values obtained through the test.
+    m_testJson.AddMember("passed", jsonPassed, allocator);
+    m_testJson.AddMember("execution_time", jsonExecutionTime, allocator);
+    m_testJson.AddMember("metrics", m_jsonMetrics, allocator);
 
-    // Add values to JSON File
-    TestJson.AddMember("name", jsonName, allocator);
-    TestJson.AddMember("project_name", jsonProject, allocator);
-    TestJson.AddMember("passed", jsonPassed, allocator);
-    TestJson.AddMember("metric_keys", jsonMetricKeys, allocator);
-    TestJson.AddMember("metric_values", jsonMetricValues, allocator);
-
-  }
-
-  /// This function writes the json object to a file
-  void saveJson() {
 
     std::string filename = m_name + ".json";
 
     // Write Json to file
-    rapidjson::StringBuffer strbuf;
-    rapidjson::Writer<rapidjson::StringBuffer> writer(strbuf);
-    TestJson.Accept(writer);
 
-    std::string jsonString = strbuf.GetString();
-    std::ofstream dataFile(filename);
+    char writeBuffer[65536];
+    FILE* fp = fopen("output.json", "w"); // non-Windows use "w"
 
-    if (dataFile.is_open()) {
-      dataFile << jsonString;
-      dataFile.close();
-    }
-    else
-      std::cout << "Unable to open file" << std::endl;
+    rapidjson::FileWriteStream os(fp, writeBuffer, sizeof(writeBuffer));
+    rapidjson::Writer<rapidjson::FileWriteStream> writer(os);
+
+    m_testJson.Accept(writer);
+
+    fclose(fp);
+
   }
 
 };
