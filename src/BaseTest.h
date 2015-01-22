@@ -75,7 +75,6 @@ public:
 
   }
 
-  /// TODO: String metric stops working when a bool addMetric is added.
   void addMetric(const std::string& metricName,
                  const std::string& metricValue) {
 
@@ -83,14 +82,7 @@ public:
     m_jsonMetrics.AddMember(rapidjson::StringRef(metricName.c_str()), rapidjson::StringRef(metricValue.c_str()), allocator);
 
   }
-/*
-  void addMetric(const std::string& metricName,
-                 bool               metricValue) {
-    // append to JSON document
-    rapidjson::Document::AllocatorType& allocator = m_testJson.GetAllocator(); ///< Allocates space in m_testjson.
-    m_jsonMetrics.AddMember(rapidjson::StringRef(metricName.c_str()), metricValue, allocator);
-  }
-*/
+
   void addMetric(const std::string&   metricName,
                  std::vector<double>& metricValue) {
     // append to JSON document
@@ -147,13 +139,10 @@ private:
     m_testJson.AddMember("execution_time", jsonExecutionTime, allocator);
     m_testJson.AddMember("metrics", m_jsonMetrics, allocator);
 
-
-    std::string filename = m_name + ".json";
-
     // Write Json to file
-
+    std::string filename = m_name + ".json";
     char writeBuffer[65536];
-    FILE* fp = fopen("output.json", "w"); // non-Windows use "w"
+    FILE* fp = fopen(filename.c_str(), "w"); // non-Windows use "w"
 
     rapidjson::FileWriteStream os(fp, writeBuffer, sizeof(writeBuffer));
     rapidjson::Writer<rapidjson::FileWriteStream> writer(os);
