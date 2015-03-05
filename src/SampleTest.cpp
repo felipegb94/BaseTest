@@ -1,4 +1,4 @@
-#include "BaseTest.h"
+#include "../BaseTest.h"
 
 class SampleTest : public BaseTest{
 public:
@@ -45,6 +45,12 @@ bool SampleTest::execute()
   addMetric("StringMetricKey", "String Metric Value"); // Strings should be less than 21 chars
   addMetric("VectorMetricKey", doubleVec); //Vector needs to be composed of doubles.
   addMetric("BooleanMetricKey", true);
+  addMetric("STRING-METRIC", "str-metric"); // Strings should be less than 21 chars
+  addMetric("M", 12); // Strings should be less than 21 chars
+  addMetric("STRING-METRIC", "str-metric"); // Strings should be less than 21 chars
+  addMetric("Solves", "OoM (in solve stage)");
+  addMetric("Solves/asdf-_", "MMO");
+  addMetric("Solves/asdf-_", (uint64_t)(55555555555));
 
   // The test should have some way to know if it passed or failed.
   // Return true or false.
