@@ -1,4 +1,4 @@
-#include "../BaseTest.h"
+#include "BaseTest.h"
 
 class SampleTest : public BaseTest{
 public:
