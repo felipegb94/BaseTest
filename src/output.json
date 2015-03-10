@@ -1,1 +1,0 @@
-{"name":"sampleTestName","project_name":"sampleProjectName","passed":false,"execution_time":10.0,"metrics":{"DoubleMetricKey1":1.31234,"DoubleMetricKey2":2.131,"IntMetricKey":12,"StringMetricKey":"String Metric Value","VectorMetricKey":[2.2,3.12,12.0],"BooleanMetricKey":1}}

@@ -14,6 +14,7 @@
 #include <vector>
 #include <cstdio>
 
+#define RAPIDJSON_HAS_STDSTRING 1
 #include "../include/rapidjson/document.h"
 #include "../include/rapidjson/stringbuffer.h"
 #include "../include/rapidjson/prettywriter.h"
@@ -62,8 +63,10 @@ public:
   void addMetric(const std::string& metricName,
                  double             metricValue) {
 
-    rapidjson::Document::AllocatorType& allocator = m_testJson.GetAllocator(); ///< Allocates space in m_testjson.
-    m_jsonMetrics.AddMember(rapidjson::StringRef(metricName.c_str()), metricValue, allocator);
+    rapidjson::Document::AllocatorType& allocator = m_testJson.GetAllocator(); ///< Allocates space in m_testjson.   
+    rapidjson::Value metricNameV(metricName, allocator);
+    rapidjson::Value metricValueV(metricValue);
+    m_jsonMetrics.AddMember(metricNameV, metricValueV, allocator);
 
   }
   
@@ -71,24 +74,27 @@ public:
                  int                metricValue) {
 
     rapidjson::Document::AllocatorType& allocator = m_testJson.GetAllocator(); ///< Allocates space in m_testjson.
-    m_jsonMetrics.AddMember(rapidjson::StringRef(metricName.c_str()), metricValue, allocator);
-
+    rapidjson::Value metricNameV(metricName, allocator);
+    rapidjson::Value metricValueV(metricValue);
+    m_jsonMetrics.AddMember(metricNameV, metricValueV, allocator);
   }
 
   void addMetric(const std::string& metricName,
                  uint64_t                metricValue) {
 
     rapidjson::Document::AllocatorType& allocator = m_testJson.GetAllocator(); ///< Allocates space in m_testjson.
-    m_jsonMetrics.AddMember(rapidjson::StringRef(metricName.c_str()), metricValue, allocator);
-
+    rapidjson::Value metricNameV(metricName, allocator);
+    rapidjson::Value metricValueV(metricValue);
+    m_jsonMetrics.AddMember(metricNameV, metricValueV, allocator);
   }
 
   void addMetric(const std::string& metricName,
                  const std::string& metricValue) {
 
     rapidjson::Document::AllocatorType& allocator = m_testJson.GetAllocator(); ///< Allocates space in m_testjson.   
-    m_jsonMetrics.AddMember(rapidjson::StringRef(metricName.c_str()), rapidjson::StringRef(metricValue.c_str()), allocator);
-
+    rapidjson::Value metricNameV(metricName, allocator);
+    rapidjson::Value metricValueV(metricValue, allocator);
+    m_jsonMetrics.AddMember(metricNameV, metricValueV, allocator);
   }
 
   void addMetric(const std::string&   metricName,
@@ -101,7 +107,9 @@ public:
       jsonMetricValue.PushBack(*itr, allocator);
     }
 
-    m_jsonMetrics.AddMember(rapidjson::StringRef(metricName.c_str()), jsonMetricValue, allocator);
+    rapidjson::Value metricNameV(metricName.c_str(), allocator);
+    m_jsonMetrics.AddMember(metricNameV, jsonMetricValue, allocator);
+
   }
   
 
@@ -148,7 +156,7 @@ private:
     m_testJson.AddMember("metrics", m_jsonMetrics, allocator);
 
     // Write Json to file
-    std::string filename = "ChronoTest_Parser/json/" + m_name + ".json";
+    std::string filename =  m_name + ".json";
     char writeBuffer[65536];
     FILE* fp = fopen(filename.c_str(), "w"); // non-Windows use "w"
 

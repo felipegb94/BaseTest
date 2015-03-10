@@ -42,15 +42,10 @@ bool SampleTest::execute()
   addMetric("DoubleMetricKey1", 1.31234);
   addMetric("DoubleMetricKey2", 2.131);
   addMetric("IntMetricKey", 12);
-  addMetric("StringMetricKey", "String Metric Value"); // Strings should be less than 21 chars
+  addMetric("StringMetricKey", "String Metric Velue"); 
   addMetric("VectorMetricKey", doubleVec); //Vector needs to be composed of doubles.
   addMetric("BooleanMetricKey", true);
-  addMetric("STRING-METRIC", "str-metric"); // Strings should be less than 21 chars
-  addMetric("M", 12); // Strings should be less than 21 chars
-  addMetric("STRING-METRIC", "str-metric"); // Strings should be less than 21 chars
-  addMetric("Solves", "OoM (in solve stage)");
-  addMetric("Solves/asdf-_", "MMO");
-  addMetric("Solves/asdf-_", (uint64_t)(55555555555));
+  addMetric("Uint64", (uint64_t)(55555555555));
 
   // The test should have some way to know if it passed or failed.
   // Return true or false.
