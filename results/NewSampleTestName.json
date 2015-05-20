@@ -1,0 +1,15 @@
+{
+    "name": "NewSampleTestName",
+    "project": "sampleProjectName",
+    "passed": 1,
+    "execution_time": 10,
+    "metrics": {
+    "DoubleMetricKey1": 1.31234,
+    "DoubleMetricKey2": 2.131,
+    "IntMetricKey": 12,
+    "StringMetricKey": "String Metric Velue",
+    "BooleanMetricKey": 1,
+    "Uint64": 55555555555
+}
+
+}
